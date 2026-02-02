@@ -22,7 +22,7 @@ def extract_metadata(url):
         "video_url": post.video_url
     }
 
-    with open(f"resources/metadata.json", "w") as f:
+    with open(f"ingestion/metadata.json", "w") as f:
         json.dump(metadata, f, indent=2)
 
     return post.video_url   

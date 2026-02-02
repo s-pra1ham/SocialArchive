@@ -16,14 +16,14 @@ def get_instagram_content_type(url):
 def download(url):
     content_type = get_instagram_content_type(url)
     print("\n" + "="*cols)
-    print(" " * ((cols - len(f"Downloading {content_type} Resources")) // 2) + f"Downloading {content_type} Resources")
+    print(" " * ((cols - len(f"Downloading {content_type} ingestion")) // 2) + f"Downloading {content_type} ingestion")
     print("="*cols + "\n")
     if content_type == "Post":
         from downloadRes.post.downloadPosts import extract_metadata
         extract_metadata(url)
     elif content_type == "Reel":
-        from downloadRes.reel.downloadReel import DownloadReel as download_reel_resources
-        download_reel_resources(url)
+        from downloadRes.reel.downloadReel import DownloadReel as download_reel_ingestion
+        download_reel_ingestion(url)
     else:
         print("Unsupported content type or invalid URL.")
     print("="*cols + "\n")
