@@ -3,8 +3,8 @@ from datetime import datetime
 
 time = int(datetime.now().timestamp())
 payload = {
-    'username': 'your_username',
-    'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{time}:your_password'
+    'username': 's.pra1ham',
+    'enc_password': f'#PWD_INSTAGRAM_BROWSER:0:{time}:pass#Pratham@G228$'
 }
 
 with requests.Session() as s:
