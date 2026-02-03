@@ -15,6 +15,8 @@ def extract_metadata(url):
     # Save metadata to JSON
     metadata = {
         "caption": post.caption,
+        "Creator": post.owner_username,
+        "Duration": post.video_duration,
         "likes": post.likes,
         "views": post.video_view_count if post.is_video else None,
         "date": str(post.date_utc),

@@ -1,8 +1,6 @@
 import re
 import os
 
-cols = os.get_terminal_size().columns
-
 def get_instagram_content_type(url):
     # Extract the path part after instagram.com
     match = re.search(r'instagram\.com/([^/]+)/([^/]+)/', url)
@@ -15,9 +13,7 @@ def get_instagram_content_type(url):
 
 def download(url):
     content_type = get_instagram_content_type(url)
-    print("\n" + "="*cols)
-    print(" " * ((cols - len(f"Downloading {content_type} ingestion")) // 2) + f"Downloading {content_type} ingestion")
-    print("="*cols + "\n")
+    print(f"----- Downloadeing {content_type} Ingestion -----")
     if content_type == "Post":
         from downloadRes.post.downloadPosts import extract_metadata
         extract_metadata(url)
@@ -26,4 +22,4 @@ def download(url):
         download_reel_ingestion(url)
     else:
         print("Unsupported content type or invalid URL.")
-    print("="*cols + "\n")
+    print("---")

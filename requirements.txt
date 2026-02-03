@@ -2,3 +2,4 @@ instaloader
 moviepy
 openai-whisper 
 pydub
+opencv-python
