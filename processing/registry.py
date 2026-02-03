@@ -16,7 +16,7 @@ def refinement_process():
     print("Audio Transcription saved to artifacts/transcription.txt")
     
     
-    print("=Extracting video frames on significant changes...")
+    print("Extracting video frames on significant changes...")
     video_path = 'ingestion/video.mp4'
     output_folder = 'artifacts/video_frames'
     extract_frames(video_path, output_folder, threshold=15000)
