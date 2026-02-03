@@ -17,7 +17,7 @@ def download(url):
     if content_type == "Post":
         print("Logic not implemented for Post downloads yet.")
         # from downloadRes.post.downloadPosts import extract_metadata
-        extract_metadata(url)
+        # extract_metadata(url)
     elif content_type == "Reel":
         from downloadRes.reel.downloadReel import DownloadReel as download_reel_ingestion
         download_reel_ingestion(url)
