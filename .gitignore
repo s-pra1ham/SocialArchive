@@ -5,3 +5,4 @@ __pycache__/
 artifacts/transcription.txt
 artifacts/video_frames/
 ingestion/
+misc/
