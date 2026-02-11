@@ -1,15 +1,15 @@
 import cv2
 import os
+import numpy as np
 
-def extract_frames(video_path, output_folder, threshold=10000):
+def extract_key_scenes(video_path, output_folder, sensitivity_threshold=15, min_frames_skip=10):
     """
-    Extracts frames from a video only when a significant visual change occurs.
+    Extracts frames based on Structural / Composition changes, ignoring facial movements.
     
     Args:
-        video_path (str): Path to the input video.
-        output_folder (str): Directory to save extracted frames.
-        threshold (int): Sensitivity of change detection. 
-                         Higher = less sensitive (needs bigger changes to trigger).
+        sensitivity_threshold (int): (0-255). Lower = more sensitive.
+                                     10-15 is usually good for ignoring faces but catching text.
+        min_frames_skip (int): Minimum frames to skip after a save (prevents bursts).
     """
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -19,55 +19,78 @@ def extract_frames(video_path, output_folder, threshold=10000):
         print(f"Error: Could not open video {video_path}")
         return
 
-    # Read the first frame as the initial reference
-    ret, prev_frame = cap.read()
-    if not ret:
-        print("Error: Could not read the first frame.")
-        return
+    # Read first frame
+    ret, frame = cap.read()
+    if not ret: return
 
-    # Pre-process the first frame (Grayscale + Blur to reduce noise)
-    prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
-    prev_gray = cv2.GaussianBlur(prev_gray, (21, 21), 0)
+    def preprocess_frame(img):
+        """
+        Resize and Heavy Blur to remove facial details but keep structure.
+        """
+        # 1. Resize to small width (speeds up processing + reduces detail)
+        h, w = img.shape[:2]
+        new_w = 200 # Small width forces loss of fine detail (facial expressions)
+        new_h = int(h * (new_w / w))
+        resized = cv2.resize(img, (new_w, new_h))
+        
+        # 2. Convert to Gray
+        gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+        
+        # 3. HEAVY BLUR (The Magic Step)
+        # Kernel size (49,49) wipes out eyes/mouth but keeps text blocks/shapes
+        blurred = cv2.GaussianBlur(gray, (49, 49), 0)
+        return blurred
 
-    frame_count = 0
+    # Initial setup
+    last_saved_frame_proc = preprocess_frame(frame)
+    
     saved_count = 0
+    # Save the very first frame
+    cv2.imwrite(os.path.join(output_folder, f"keyframe_{saved_count:04d}.jpg"), frame)
+    saved_count += 1
+    
+    frames_since_last_save = 0
+    total_frames = 0
 
     while True:
         ret, frame = cap.read()
-        if not ret:
-            break
-
-        # 1. Pre-process current frame
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
-        # 2. Compute the absolute difference between current and previous frame
-        frame_diff = cv2.absdiff(prev_gray, gray)
-        # 3. Apply thresholding to create a binary mask of the changes
-        _, thresh = cv2.threshold(frame_diff, 25, 255, cv2.THRESH_BINARY)
-
-        # 4. Count white pixels (representing change)
-        change_score = cv2.countNonZero(thresh)
+        if not ret: break
         
-        if change_score > threshold:
-            frame_filename = os.path.join(output_folder, f"change_{saved_count:04d}.png")
-            cv2.imwrite(frame_filename, frame)
-            # print(f"Change detected! Saved: {frame_filename} (Score: {change_score})")
-            
-            # Update reference frame so we detect the NEXT change relative to this one
-            prev_gray = gray
-            saved_count += 1
+        frames_since_last_save += 1
+        total_frames += 1
 
-        frame_count += 1
+        # Skip processing if we just saved a frame (Cooldown)
+        if frames_since_last_save < min_frames_skip:
+            continue
+
+        # Process current frame
+        curr_frame_proc = preprocess_frame(frame)
+
+        # Calculate Difference between CURRENT frame and LAST SAVED frame
+        # (Comparing to last saved frame is crucial to detect accumulated changes)
+        diff = cv2.absdiff(last_saved_frame_proc, curr_frame_proc)
+        
+        # Get the mean intensity of the difference
+        mean_diff = np.mean(diff)
+
+        # Check if change is significant enough
+        if mean_diff > sensitivity_threshold:
+            
+            # Save the frame
+            filename = os.path.join(output_folder, f"keyframe_{saved_count:04d}.jpg")
+            cv2.imwrite(filename, frame)
+            # print(f"Saved {filename} | Diff Score: {mean_diff:.2f}")
+
+            # Update reference and reset counters
+            last_saved_frame_proc = curr_frame_proc
+            saved_count += 1
+            frames_since_last_save = 0
 
     cap.release()
-    print(f"Extraction complete. Saved {saved_count} frames from {frame_count} total frames.")
-
+    print(f"Extraction complete. Saved {saved_count} keyframes from {total_frames} total in {output_folder}.")
 
 if __name__ == "__main__":
     # --- Usage ---
-    video_file = 'ingestion/video.mp4'
-    output_directory = 'artifacts/video_frames'
-    
-    # Run the function (Adjust threshold based on your video's movement)
-    extract_frames(video_file, output_directory, threshold=15000)
+    # threshold=15: Ignores talking heads, catches new text/overlays
+    # min_frames_skip=10: Waits at least ~0.3 seconds between captures
+    extract_key_scenes('ingestion/video.mp4', 'artifacts/video_frames', sensitivity_threshold=15)
