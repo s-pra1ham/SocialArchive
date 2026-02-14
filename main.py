@@ -1,6 +1,7 @@
 from downloadRes.download import download
 from processing.registry import refinement_process
 from clean_cache import clear_existing_data
+from summarization.gemini_summarizer import ReelSummarizer
 import time
 
 if __name__ == "__main__":
@@ -12,6 +13,11 @@ if __name__ == "__main__":
     clear_existing_data()
     download(url)
     refinement_process()
+    ReelSummarizer(model_name="gemini-2.5-flash").generate_summary(
+        "./artifacts/transcription.txt",
+        "./artifacts/refined_frames.json",
+        "./ingestion/metadata.json"
+    )
     clear_existing_data()
 
     for i in range(1000000):

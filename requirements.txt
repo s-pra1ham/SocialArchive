@@ -1,5 +1,16 @@
 instaloader
 moviepy
-openai-whisper 
+openai-whisper
 pydub
 opencv-python
+ollama
+google-generativeai
+requests
+pillow
+torch
+ultralytics
+transformers
+easyocr
+av
+numpy
+scikit-image
