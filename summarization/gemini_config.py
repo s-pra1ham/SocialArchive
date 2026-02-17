@@ -1,10 +1,13 @@
 import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 from google.api_core import retry
 
+# Load environment variables from a .env file in project root (if prese.nt)
+load_dotenv()
+
 # Configuration
 # You can hardcode your key here for testing, but environment variables are safer.
-os.environ["GEMINI_API_KEY"] = "AIzaSyA1Rnv5FsdF5Ex77cJEbg_-cCA7tMcFDt4"
 
 DEFAULT_MODEL = "gemini-1.5-flash"  # Flash is fast and cheap; use "gemini-1.5-pro" for complex reasoning
 

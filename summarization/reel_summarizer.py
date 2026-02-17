@@ -6,7 +6,7 @@ from ollama_manager import initialize_ollama
 # or run as a module: python -m your_package.reel_summarizer
 
 class ReelSummarizer:
-    def __init__(self, model_name="llama3.2:1b"):
+    def __init__(self, model_name="gpt-oss:120b-cloud  "):
         self.model_name = initialize_ollama(model_name)
 
     def _read_text(self, path):
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     except ImportError:
         pass # Assuming the class handles import or file structure is different
 
-    summarizer = ReelSummarizer(model_name="llama3.2:1b")
+    summarizer = ReelSummarizer(model_name="gpt-oss:120b-cloud  ")
     
     print("\n--- TEST RUN START ---")
     summary = summarizer.generate_detailed_summary(

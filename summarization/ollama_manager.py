@@ -6,7 +6,7 @@ import os
 
 # Configuration
 OLLAMA_HOST = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.2:1b.2:1b"  # Change to 'mistral', 'gemma', etc. as needed
+DEFAULT_MODEL = "gpt-oss:120b-cloud  .2:1b"  # Change to 'mistral', 'gemma', etc. as needed
 
 def is_server_running():
     """Checks if the Ollama server is reachable."""
@@ -57,7 +57,7 @@ def ensure_model_pulled(model_name=DEFAULT_MODEL):
         # Handle difference in return structure between versions
         existing_models = [m['name'] for m in models_info.get('models', [])]
         
-        # Check for exact match or match with tag (e.g. llama3.2:1b:latest)
+        # Check for exact match or match with tag (e.g. gpt-oss:120b-cloud  :latest)
         if not any(model_name in m for m in existing_models):
             print(f"⬇️ Model '{model_name}' not found locally. Pulling now (this may take a while)...")
             ollama.pull(model_name)
