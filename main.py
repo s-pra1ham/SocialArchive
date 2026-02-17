@@ -4,6 +4,12 @@ from clean_cache import clear_existing_data
 from summarization.gemini_summarizer import ReelSummarizer
 import time
 
+import os
+import certifi
+
+os.environ['REQUESTS_CA_BUNDLE'] = certifi.where()
+os.environ['SSL_CERT_FILE'] = certifi.where()   
+
 if __name__ == "__main__":
     start = time.perf_counter()
 
