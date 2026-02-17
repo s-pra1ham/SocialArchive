@@ -14,4 +14,6 @@ easyocr
 av
 numpy
 scikit-image
-python-dotenv
+python-dotenv 
+openai 
+anthropic

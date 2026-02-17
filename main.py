@@ -1,7 +1,8 @@
 from downloadRes.download import download
 from processing.registry import refinement_process
 from clean_cache import clear_existing_data
-from summarization.gemini_summarizer import ReelSummarizer
+# from summarization.gemini_summarizer import ReelSummarizer
+from summarization.reel_summarizer import ReelSummarizer
 import time
 
 import os
@@ -19,11 +20,28 @@ if __name__ == "__main__":
     clear_existing_data()
     download(url)
     refinement_process()
-    ReelSummarizer(model_name="gemini-2.5-flash").generate_summary(
-        "./artifacts/transcription.txt",
-        "./artifacts/refined_frames.json",
-        "./ingestion/metadata.json"
-    )
+
+    # Summarization
+    TRANSCRIPT = "./artifacts/transcription.txt"
+    FRAMES = "./artifacts/refined_frames.json"
+    META = "./ingestion/metadata.json"
+
+    # Choose provider and model
+    # Options: 'gemini', 'openai', 'claude', 'ollama'
+    # Model Name: Optional (pass None to use default in config)
+    PROVIDER = "ollama"
+    MODEL = "gpt-oss:120b-cloud"
+
+    try:
+        summarizer = ReelSummarizer(provider=PROVIDER, model_name=MODEL)
+        
+        result = summarizer.generate_summary(TRANSCRIPT, FRAMES, META)
+        
+        print("\n--- 📝 GENERATED SUMMARY SAMPLE ---")
+        print(result[:500] + "..." if len(result) > 500 else result)
+        
+    except Exception as e:
+        print(f"\n❌ Execution failed: {e}")
     clear_existing_data()
 
     for i in range(1000000):

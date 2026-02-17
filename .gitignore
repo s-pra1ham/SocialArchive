@@ -8,3 +8,4 @@ artifacts/video_frames/
 ingestion/
 yolov8n.pt
 yolov10n.pt
+storage/
