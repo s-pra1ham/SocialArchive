@@ -2,10 +2,11 @@
 .venv
 __pycache__/
 *.pyc
-artifacts/
+artifacts/refined_frames.json
 artifacts/transcription.txt
 artifacts/video_frames/
-ingestion/
+ingestion/audio.mp3
+ingestion/metadata.json
+ingestion/video.mp4
 yolov8n.pt
 yolov10n.pt
-storage/
